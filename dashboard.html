@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .diagonal-top-left-grid-bg {
+    min-height: 100vh;
+    width: 100%;
+    position: relative;
+    background-color: #f9fafb; /* bg-[#f9fafb] */
+    overflow: hidden;
+  }
+
+  .diagonal-top-left-grid-bg::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+
+    /* The grid pattern */
+    background-image:
+      linear-gradient(to right, #d1d5db 1px, transparent 1px),
+      linear-gradient(to bottom, #d1d5db 1px, transparent 1px);
+    background-size: 32px 32px;
+
+    /* Fade from top-left corner */
+    -webkit-mask-image: radial-gradient(
+      ellipse 80% 80% at 0% 0%,
+      #000 50%,
+      transparent 90%
+    );
+    mask-image: radial-gradient(
+      ellipse 80% 80% at 0% 0%,
+      #000 50%,
+      transparent 90%
+    );
+  }
+
+  /* Prevent overlap on text/content */
+  .diagonal-top-left-grid-bg > * {
+    position: relative;
+    z-index: 1;
+  }
+  .cursive-title {
+  font-family: "Segoe Script", cursive;
+}
+
+
+
+
+
+
+        .welcome-section {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .welcome-section h1 {
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+        
+        .welcome-section p {
+            color: #666;
+            font-size: 1.1rem;
+        }
+        
+        .quick-actions {
+            display: flex;
+            gap: 1rem;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+        }
+        
+        .section {
+            display: none;
+        }
+        
+        .section.active {
+            display: block;
+        }
+        
+        .search-box {
+            margin-bottom: 1rem;
+        }
+        
+        .search-box input {
+            width: 300px;
+            max-width: 100%;
+        }
+        
+        .order-actions {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="diagonal-top-left-grid-bg">
+        <!-- Header -->
+        <header class="topbar">
+            <div class="brand">
+                <span>Big Chill</span>
+            </div>
+            <nav>
+                <button class="btn btn-primary" onclick="showSection('dashboard')">Home</button>
+                <button class="btn" onclick="showSection('customers')">Customers</button>
+                <button class="btn" onclick="showSection('orders')">View Orders</button>
+                <button class="btn" onclick="showSection('new-order')">New Order</button>
+                <button class="btn btn-secondary" onclick="logout()">Logout</button>
+            </nav>
+        </header>
+
+        <!-- Main Content -->
+        <div class="container">
+            <!-- Dashboard Section -->
+            <section id="dashboard" class="section active">
+                <div class="welcome-section">
+                    <h1>Welcome to Your Workspace</h1>
+                    <p>Use this to manage your laundry business smoothly and efficiently.</p>
+                </div>
+
+                <!-- Stats Overview -->
+                <div class="stats-grid">
+                    <div class="card stats-card">
+                        <div class="stats-number" id="stat-customers">0</div>
+                        <div class="stats-label">Customers</div>
+                    </div>
+                    <div class="card stats-card">
+                        <div class="stats-number" id="stat-orders">0</div>
+                        <div class="stats-label">Orders</div>
+                    </div>
+                    <div class="card stats-card">
+                        <div class="stats-number" id="stat-today-orders">0</div>
+                        <div class="stats-label">today's Orders</div>
+                    </div>
+                    <div class="card stats-card">
+                        <div class="stats-number" id="stat-revenue">₹0</div>
+                        <div class="stats-label">Revenue</div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="quick-actions">
+                    <button class="btn btn-primary" onclick="showSection('new-order')">
+                         Create New Order
+                    </button>
+                    <button class="btn btn-success" onclick="showSection('customers')">
+                         Manage Customers
+                    </button>
+                    <button class="btn btn-info" onclick="showSection('orders')">
+                         View Orders
+                    </button>
+                </div>
+
+                <!-- Recent Orders -->
+                <div class="card">
+                    <h2 class="cursive-title">Recent Orders</h2>
+                    <div id="recent-orders">
+                        <p class="text-muted">Loading recent orders...</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Customers Section -->
+            <section id="customers" class="section">
+                <div class="card">
+                    <h2>Customer Management</h2>
+                    
+                    <div class="search-box">
+                        <input type="text" id="customer-search" class="form-control" 
+                               placeholder="Search customers by name, phone, or email..." 
+                               oninput="searchCustomers()">
+                    </div>
+
+                    <div class="grid-2">
+                        <div>
+                            <h3>Add New Customer</h3>
+                            <div class="form-group">
+                                <label>Name *</label>
+                                <input type="text" id="customer-name" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Phone</label>
+                                <input type="tel" id="customer-phone" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label>Email</label>
+                                <input type="email" id="customer-email" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label>Address</label>
+                                <textarea id="customer-address" class="form-control" rows="3"></textarea>
+                            </div>
+                            <button class="btn btn-primary" onclick="addCustomer()">Add Customer</button>
+                            <span id="customer-message" class="text-muted"></span>
+                        </div>
+
+                        <div>
+                            <h3>Customer List</h3>
+                            <div id="customers-list" style="max-height: 400px; overflow-y: auto;">
+                                <p class="text-muted">Loading customers...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- New Order Section -->
+            <section id="new-order" class="section">
+                <div class="card">
+                    <h2>Create New Order</h2>
+                    
+                    <div class="grid-2">
+                        <div>
+                            <div class="form-group">
+                                <label>Customer *</label>
+                                <select id="order-customer" class="form-control" required>
+                                    <option value="">Select a customer...</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Special Instructions</label>
+                                <textarea id="order-instructions" class="form-control" rows="3" 
+                                          placeholder="Any special instructions for this order..."></textarea>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h3>Order Items</h3>
+                            <div id="order-items">
+                                <div class="item-row">
+                                    <select class="form-control item-cloth" onchange="updateItemPrice(this)">
+                                        <option value="">Select cloth type</option>
+                                    </select>
+                                    <select class="form-control item-service" onchange="updateItemPrice(this)">
+                                        <option value="">Select service</option>
+                                    </select>
+                                    <input type="number" class="form-control item-quantity" value="1" min="1" onchange="calculateOrderTotal()">
+                                    <input type="number" class="form-control item-price" placeholder="Price" readonly>
+                                    <input type="text" class="form-control item-notes" placeholder="Notes">
+                                    <button class="btn btn-danger" onclick="removeItem(this)">×</button>
+                                </div>
+                            </div>
+                            
+                            <button class="btn" onclick="addItemRow()">+ Add Item</button>
+                        </div>
+                    </div>
+
+                    <div style="border-top: 2px solid #e5e7eb; padding-top: 1rem; margin-top: 1rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <h3>Total: <span id="order-total">₹0.00</span></h3>
+                            <button class="btn btn-primary" onclick="createOrder()">Create Order</button>
+                        </div>
+                        <div id="order-message" class="text-muted"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Orders Section -->
+            <section id="orders" class="section">
+                <div class="card">
+                    <h2>Order Management</h2>
+                    
+                    <div class="nav-tabs">
+                        <button class="nav-tab active" onclick="filterOrders('all')">All Orders</button>
+                        <button class="nav-tab" onclick="filterOrders('Pending')">Pending</button>
+                        <button class="nav-tab" onclick="filterOrders('Washing')">Washing</button>
+                        <button class="nav-tab" onclick="filterOrders('Ironing')">Ironing</button>
+                        <button class="nav-tab" onclick="filterOrders('Ready')">Ready</button>
+                        <button class="nav-tab" onclick="filterOrders('Delivered')">Delivered</button>
+                    </div>
+
+                    <div class="search-box">
+                        <input type="text" id="order-search" class="form-control" 
+                               placeholder="Search orders..." oninput="searchOrders()">
+                    </div>
+
+                    <div id="orders-list">
+                        <p class="text-muted">Loading orders...</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <script src="script.js"></script>
+        <script>
+            // Global variables
+            let metaData = null;
+            let currentOrderFilter = 'all';
+            let currentUser = null;
+
+            // Authentication check
+            if (!isAuthenticated()) {
+                window.location.href = 'index.html';
+            } else {
+                currentUser = getCurrentUser();
+            }
+
+            // Section management
+            function showSection(sectionId) {
+                // Hide all sections
+                document.querySelectorAll('.section').forEach(section => {
+                    section.classList.remove('active');
+                });
+                
+                // Show selected section
+                document.getElementById(sectionId).classList.add('active');
+                
+                // Load section data
+                switch(sectionId) {
+                    case 'dashboard':
+                        loadDashboard();
+                        break;
+                    case 'customers':
+                        loadCustomers();
+                        break;
+                    case 'new-order':
+                        loadOrderForm();
+                        break;
+                    case 'orders':
+                        loadOrders();
+                        break;
+                }
+            }
+
+            // Dashboard functions
+            async function loadDashboard() {
+                await loadStats();
+                await loadRecentOrders();
+            }
+
+            async function loadStats() {
+                try {
+                    const response = await apiFetch('get_stats.php', 'GET');
+                    if (response.ok) {
+                        const stats = response.stats;
+                        document.getElementById('stat-customers').textContent = stats.total_customers;
+                        document.getElementById('stat-orders').textContent = stats.total_orders;
+                        document.getElementById('stat-today-orders').textContent = stats.today_orders;
+                        document.getElementById('stat-revenue').textContent = formatCurrency(stats.total_revenue);
+                    }
+                } catch (error) {
+                    console.error('Error loading stats:', error);
+                }
+            }
+
+            async function loadRecentOrders() {
+                try {
+                    const response = await apiFetch('get_orders.php', 'GET', { status: 'all' });
+                    const container = document.getElementById('recent-orders');
+                    
+                    if (response.ok && response.orders.length > 0) {
+                        const recentOrders = response.orders.slice(0, 5);
+                        container.innerHTML = recentOrders.map(order => `
+                            <div class="order-card">
+                                <div style="display: flex; justify-content: space-between; align-items: start;">
+                                    <div>
+                                        <strong>Order #${order.id}</strong> - ${order.customer_name}
+                                        <span class="text-muted">(${order.customer_phone})</span>
+                                    </div>
+                                    <div>
+                                        <span class="badge badge-${order.status.toLowerCase()}">${order.status}</span>
+                                        <div class="text-muted">${formatDate(order.order_date)}</div>
+                                    </div>
+                                </div>
+                                <div class="text-muted">Total: ${formatCurrency(order.total_amount)}</div>
+                            </div>
+                        `).join('');
+                    } else {
+                        container.innerHTML = '<p class="text-muted">No recent orders found.</p>';
+                    }
+                } catch (error) {
+                    console.error('Error loading recent orders:', error);
+                }
+            }
+
+            // Customer functions
+            async function loadCustomers() {
+                try {
+                    const response = await apiFetch('get_customers.php', 'GET');
+                    const container = document.getElementById('customers-list');
+                    
+                    if (response.ok) {
+                        const customers = response.customers;
+                        if (customers.length > 0) {
+                            container.innerHTML = customers.map(customer => `
+                                <div class="card" style="margin-bottom: 0.5rem;">
+                                    <strong>${customer.name}</strong>
+                                    <div class="text-muted">
+                                        ${customer.phone ? ` ${customer.phone}` : ''}
+                                        ${customer.email ? ` ${customer.email}` : ''}
+                                    </div>
+                                    <small>${customer.address || 'No address provided'}</small>
+                                </div>
+                            `).join('');
+                        } else {
+                            container.innerHTML = '<p class="text-muted">No customers found.</p>';
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error loading customers:', error);
+                }
+            }
+
+            async function addCustomer() {
+                const name = document.getElementById('customer-name').value.trim();
+                const phone = document.getElementById('customer-phone').value.trim();
+                const email = document.getElementById('customer-email').value.trim();
+                const address = document.getElementById('customer-address').value.trim();
+                const message = document.getElementById('customer-message');
+
+                if (!name) {
+                    showNotification('Customer name is required', 'error');
+                    return;
+                }
+
+                try {
+                    const response = await apiFetch('add_customer.php', 'POST', {
+                        name, phone, email, address
+                    });
+
+                    if (response.ok) {
+                        showNotification('Customer added successfully!', 'success');
+                        message.textContent = `Customer ID: ${response.customer_id}`;
+                        
+                        // Clear form
+                        document.getElementById('customer-name').value = '';
+                        document.getElementById('customer-phone').value = '';
+                        document.getElementById('customer-email').value = '';
+                        document.getElementById('customer-address').value = '';
+                        
+                        // Reload customers list
+                        loadCustomers();
+                        loadStats();
+                    } else {
+                        showNotification(response.message, 'error');
+                    }
+                } catch (error) {
+                    showNotification('Failed to add customer', 'error');
+                }
+            }
+
+            function searchCustomers() {
+                const searchTerm = document.getElementById('customer-search').value;
+                // Implementation would filter the displayed customers
+            }
+
+            // Order form functions
+            async function loadOrderForm() {
+                await loadCustomersForOrder();
+                await loadMetaData();
+                calculateOrderTotal();
+            }
+
+            async function loadCustomersForOrder() {
+                try {
+                    const response = await apiFetch('get_customers.php', 'GET');
+                    const select = document.getElementById('order-customer');
+                    
+                    if (response.ok) {
+                        select.innerHTML = '<option value="">Select a customer...</option>' +
+                            response.customers.map(customer => 
+                                `<option value="${customer.id}">${customer.name} - ${customer.phone || 'No phone'}</option>`
+                            ).join('');
+                    }
+                } catch (error) {
+                    console.error('Error loading customers:', error);
+                }
+            }
+
+            async function loadMetaData() {
+                if (!metaData) {
+                    try {
+                        const response = await apiFetch('get_meta.php', 'GET');
+                        if (response.ok) {
+                            metaData = response.data;
+                            populateClothAndServiceOptions();
+                        }
+                    } catch (error) {
+                        console.error('Error loading meta data:', error);
+                    }
+                }
+            }
+
+            function populateClothAndServiceOptions() {
+                const clothSelects = document.querySelectorAll('.item-cloth');
+                const serviceSelects = document.querySelectorAll('.item-service');
+                
+                clothSelects.forEach(select => {
+                    select.innerHTML = '<option value="">Select cloth type</option>' +
+                        metaData.cloth_types.map(cloth => 
+                            `<option value="${cloth.cloth_name}">${cloth.cloth_name}</option>`
+                        ).join('');
+                });
+                
+                serviceSelects.forEach(select => {
+                    select.innerHTML = '<option value="">Select service</option>' +
+                        metaData.service_types.map(service => 
+                            `<option value="${service.service_name}">${service.service_name}</option>`
+                        ).join('');
+                });
+            }
+
+            function addItemRow() {
+                const container = document.getElementById('order-items');
+                const newRow = document.createElement('div');
+                newRow.className = 'item-row';
+                newRow.innerHTML = `
+                    <select class="form-control item-cloth" onchange="updateItemPrice(this)">
+                        <option value="">Select cloth type</option>
+                        ${metaData ? metaData.cloth_types.map(cloth => 
+                            `<option value="${cloth.cloth_name}">${cloth.cloth_name}</option>`
+                        ).join('') : ''}
+                    </select>
+                    <select class="form-control item-service" onchange="updateItemPrice(this)">
+                        <option value="">Select service</option>
+                        ${metaData ? metaData.service_types.map(service => 
+                            `<option value="${service.service_name}">${service.service_name}</option>`
+                        ).join('') : ''}
+                    </select>
+                    <input type="number" class="form-control item-quantity" value="1" min="1" onchange="calculateOrderTotal()">
+                    <input type="number" class="form-control item-price" placeholder="Price" readonly>
+                    <input type="text" class="form-control item-notes" placeholder="Notes">
+                    <button class="btn btn-danger" onclick="removeItem(this)">×</button>
+                `;
+                container.appendChild(newRow);
+            }
+
+            function removeItem(button) {
+                const row = button.closest('.item-row');
+                if (document.querySelectorAll('.item-row').length > 1) {
+                    row.remove();
+                    calculateOrderTotal();
+                } else {
+                    showNotification('At least one item is required', 'warning');
+                }
+            }
+
+            function updateItemPrice(select) {
+                const row = select.closest('.item-row');
+                const clothSelect = row.querySelector('.item-cloth');
+                const serviceSelect = row.querySelector('.item-service');
+                const priceInput = row.querySelector('.item-price');
+                
+                // Simple pricing logic - you can enhance this with your price matrix
+                if (clothSelect.value && serviceSelect.value) {
+                    const basePrice = 25; // Default base price
+                    priceInput.value = basePrice;
+                    calculateOrderTotal();
+                }
+            }
+
+            function calculateOrderTotal() {
+                let total = 0;
+                document.querySelectorAll('.item-row').forEach(row => {
+                    const quantity = parseInt(row.querySelector('.item-quantity').value) || 0;
+                    const price = parseFloat(row.querySelector('.item-price').value) || 0;
+                    total += quantity * price;
+                });
+                document.getElementById('order-total').textContent = formatCurrency(total);
+            }
+
+            async function createOrder() {
+                const customerId = document.getElementById('order-customer').value;
+                const instructions = document.getElementById('order-instructions').value;
+                const message = document.getElementById('order-message');
+
+                if (!customerId) {
+                    showNotification('Please select a customer', 'error');
+                    return;
+                }
+
+                const items = [];
+                let hasValidItems = false;
+
+                document.querySelectorAll('.item-row').forEach(row => {
+                    const clothType = row.querySelector('.item-cloth').value;
+                    const serviceType = row.querySelector('.item-service').value;
+                    const quantity = parseInt(row.querySelector('.item-quantity').value) || 1;
+                    const price = parseFloat(row.querySelector('.item-price').value) || 0;
+                    const notes = row.querySelector('.item-notes').value;
+
+                if (clothType && serviceType && price > 0) {
+                    items.push({ cloth_type: clothType, service_type: serviceType, quantity, price, notes });
+                    hasValidItems = true;
+                }
+            });
+
+            if (!hasValidItems) {
+                showNotification('Please add at least one valid order item', 'error');
+                return;
+            }
+
+            try {
+                const response = await apiFetch('add_order.php', 'POST', {
+                    customer_id: parseInt(customerId),
+                    items: items,
+                    special_instructions: instructions
+                });
+
+                if (response.ok) {
+                    showNotification(`Order created successfully! Order ID: ${response.order_id}`, 'success');
+                    message.textContent = `Order #${response.order_id} created with total ${formatCurrency(response.total_amount)}`;
+                    
+                    // Reset form
+                    document.getElementById('order-customer').value = '';
+                    document.getElementById('order-instructions').value = '';
+                    document.getElementById('order-items').innerHTML = `
+                        <div class="item-row">
+                            <select class="form-control item-cloth" onchange="updateItemPrice(this)">
+                                <option value="">Select cloth type</option>
+                            </select>
+                            <select class="form-control item-service" onchange="updateItemPrice(this)">
+                                <option value="">Select service</option>
+                            </select>
+                            <input type="number" class="form-control item-quantity" value="1" min="1" onchange="calculateOrderTotal()">
+                            <input type="number" class="form-control item-price" placeholder="Price" readonly>
+                            <input type="text" class="form-control item-notes" placeholder="Notes">
+                            <button class="btn btn-danger" onclick="removeItem(this)">×</button>
+                        </div>
+                    `;
+                    populateClothAndServiceOptions();
+                    calculateOrderTotal();
+                    
+                    // Reload stats
+                    loadStats();
+                } else {
+                    showNotification(response.message, 'error');
+                }
+            } catch (error) {
+                showNotification('Failed to create order', 'error');
+            }
+        }
+
+        // Orders management
+        async function loadOrders(filter = 'all') {
+            currentOrderFilter = filter;
+            try {
+                const response = await apiFetch('get_orders.php', 'GET', { 
+                    status: filter === 'all' ? '' : filter 
+                });
+                const container = document.getElementById('orders-list');
+                
+                if (response.ok && response.orders.length > 0) {
+                    container.innerHTML = response.orders.map(order => `
+                        <div class="order-card">
+                            <div style="display: flex; justify-content: space-between; align-items: start;">
+                                <div>
+                                    <strong>Order #${order.id}</strong> - ${order.customer_name}
+                                    <span class="text-muted">(${order.customer_phone})</span>
+                                </div>
+                                <div style="text-align: right;">
+                                    <span class="badge badge-${order.status.toLowerCase()}">${order.status}</span>
+                                    <div class="text-muted">${formatDate(order.order_date)}</div>
+                                </div>
+                            </div>
+                            
+                            <div class="text-muted mb-2">
+                                Total: ${formatCurrency(order.total_amount)} | 
+                                Payment: ${order.payment_status || 'Pending'}
+                            </div>
+                            
+                            <div class="mb-2">
+                                ${order.items.map(item => `
+                                    <div>${item.quantity} × ${item.cloth_type} (${item.service_type}) - ${formatCurrency(item.price)} 
+                                    ${item.notes ? `- ${item.notes}` : ''}</div>
+                                `).join('')}
+                            </div>
+                            
+                            ${order.special_instructions ? `
+                                <div class="text-muted mb-2">
+                                    <strong>Instructions:</strong> ${order.special_instructions}
+                                </div>
+                            ` : ''}
+                            
+                            <div class="order-actions">
+                                <button class="btn btn-sm ${order.status !== 'Pending' ? 'btn-secondary' : 'btn-primary'}" 
+                                        ${order.status !== 'Pending' ? 'disabled' : ''}
+                                        onclick="updateOrderStatus(${order.id}, 'Washing')">
+                                    Start Washing
+                                </button>
+                                <button class="btn btn-sm ${order.status !== 'Washing' ? 'btn-secondary' : 'btn-warning'}" 
+                                        ${order.status !== 'Washing' ? 'disabled' : ''}
+                                        onclick="updateOrderStatus(${order.id}, 'Ironing')">
+                                    Start Ironing
+                                </button>
+                                <button class="btn btn-sm ${order.status !== 'Ironing' ? 'btn-secondary' : 'btn-info'}" 
+                                        ${order.status !== 'Ironing' ? 'disabled' : ''}
+                                        onclick="updateOrderStatus(${order.id}, 'Ready')">
+                                    Mark Ready
+                                </button>
+                                <button class="btn btn-sm ${order.status !== 'Ready' ? 'btn-secondary' : 'btn-success'}" 
+                                        ${order.status !== 'Ready' ? 'disabled' : ''}
+                                        onclick="updateOrderStatus(${order.id}, 'Delivered')">
+                                    Mark Delivered
+                                </button>
+                                <button class="btn btn-sm btn-danger" 
+                                        onclick="updateOrderStatus(${order.id}, 'Cancelled')">
+                                    Cancel
+                                </button>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    container.innerHTML = '<p class="text-muted">No orders found.</p>';
+                }
+            } catch (error) {
+                console.error('Error loading orders:', error);
+            }
+        }
+
+        function filterOrders(status) {
+            document.querySelectorAll('.nav-tab').forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+            loadOrders(status);
+        }
+
+        function searchOrders() {
+            const searchTerm = document.getElementById('order-search').value;
+            // Implementation would filter the displayed orders
+        }
+
+        async function updateOrderStatus(orderId, status) {
+            try {
+                const response = await apiFetch('update_order_status.php', 'POST', {
+                    order_id: orderId,
+                    status: status
+                });
+
+                if (response.ok) {
+                    showNotification(`Order status updated to ${status}`, 'success');
+                    loadOrders(currentOrderFilter);
+                    loadStats();
+                } else {
+                    showNotification(response.message, 'error');
+                }
+            } catch (error) {
+                showNotification('Failed to update order status', 'error');
+            }
+        }
+
+        // Initialize dashboard when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            showSection('dashboard');
+        });
+
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                localStorage.removeItem('dbg_auth');
+                localStorage.removeItem('dbg_user');
+                window.location.href = 'index.html';
+            }
+        }
+    </script>
+</body>
+</html>

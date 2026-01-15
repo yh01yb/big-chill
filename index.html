@@ -1,0 +1,409 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,300&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  
+
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background: #f7f9fc;
+      color: #1b1d25;
+    }
+
+    header {
+      padding: 20px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .brand {
+      font-size: 22px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+    }
+
+    .center-wrapper {
+      text-align: center;
+      padding-top: 20px;
+    }
+
+    h1 {
+      font-size: 48px;
+      font-weight: 700;
+      margin-bottom: 0;
+    }
+
+    h2 {
+      margin-top: 8px;
+      font-size: 32px;
+      color: #4a5568;
+    }
+
+    .subtext {
+      max-width: 600px;
+      margin: 20px auto;
+      font-size: 18px;
+      color: #666;
+      line-height: 1.6;
+    }
+
+    /* Feature cards */
+    .feature-cards {
+      margin-top: 30px;
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+    }
+
+    .f-card {
+      background: white;
+      padding: 15px 22px;
+      border-radius: 14px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+      width: 170px;
+      font-size: 15px;
+      font-weight: 500;
+      color: #333;
+      cursor: pointer;
+      text-align: center;
+      transition: 0.2s;
+    }
+
+    .f-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+    }
+
+    /* LOGIN CARD */
+    .login-card {
+      margin: 20px auto 0;
+      transform: translateY(0px);
+      width: 340px;
+      background: white;
+      border-radius: 20px;
+      padding: 28px;
+      box-shadow: 0 8px 28px rgba(0,0,0,0.12);
+      text-align: center;
+    }
+
+    .login-card .logo {
+      width: 80px;
+      margin-bottom: 10px;
+    }
+
+    .login-card input {
+      width: 100%;
+      padding: 12px;
+      margin-top: 12px;
+      border-radius: 10px;
+      border: 1px solid #d0d5dd;
+      font-size: 15px;
+    }
+
+    /* GITHUB STYLE BUTTONS */
+    .btn {
+      width: 100%;
+      padding: 12px;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid rgba(0,0,0,0.15);
+      transition: background 0.15s, border-color 0.15s;
+    }
+
+    .btn.primary {
+      background: #24292e;
+      color: white;
+      margin-top: 16px;
+    }
+    .btn.primary:hover {
+      background: #1b1f23;
+    }
+
+    .btn.signup {
+      background: #2ea44f;
+      color: white;
+      margin-top: 10px;
+    }
+    .btn.signup:hover {
+      background: #279644;
+    }
+
+    .muted { color: #777; }
+    .small { font-size: 13px; margin-top: 8px; }
+
+    /* QUOTE */
+    .footer-quote {
+      margin-top: 35px;
+      padding: 10px 20px;
+      font-size: 15px;
+      color: #666;
+      text-align: center;
+      font-family: 'Inter', sans-serif;
+      font-weight: 300;
+      opacity: 0.85;
+    }
+
+    /* Signup Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-content {
+      background: white;
+      padding: 30px;
+      border-radius: 20px;
+      width: 400px;
+      max-width: 90%;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+    }
+
+    .modal h3 {
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .modal input {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 12px;
+      border-radius: 10px;
+      border: 1px solid #d0d5dd;
+      font-size: 15px;
+    }
+
+    .modal-buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .modal-buttons .btn {
+      flex: 1;
+    }
+
+    .message {
+      padding: 10px;
+      border-radius: 8px;
+      margin-top: 10px;
+      font-size: 14px;
+    }
+
+    .message.error {
+      background: #fee;
+      color: #c33;
+      border: 1px solid #fcc;
+    }
+
+    .message.success {
+      background: #efe;
+      color: #363;
+      border: 1px solid #cfc;
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <div class="brand">Big Chill</div>
+  </header>
+
+  <div class="center-wrapper">
+
+    <div style="margin-bottom: 18px; display:inline-block; background:white; padding:8px 16px; border-radius:14px; box-shadow:0 4px 12px rgba(0,0,0,0.1); font-size:14px;">
+      🌟 New features coming soon!
+    </div>
+
+    <h1>One-Step Laundry Solution.</h1>
+    <h2>Easy Cleaning Schedules</h2>
+
+    <p class="subtext">
+      A complete laundry management system to handle customers, orders, 
+      payments and delivery tracking with modern interface.
+    </p>
+
+    <!-- FEATURE CARDS -->
+ <div class="feature-cards">
+      
+  <a href="https://twitter.com" target="_blank" style="text-decoration:none; color:inherit;">
+    <div class="f-card">Twitter</div>
+  </a>
+
+  <a href="https://github.com" target="_blank" style="text-decoration:none; color:inherit;">
+    <div class="f-card">Github</div>
+  </a>
+
+</div>
+
+
+    <!-- LOGIN CARD -->
+    <div class="login-card">
+      <img src="" class="logo" onerror="this.style.display='none'">
+
+      <h3 style="margin-bottom: 4px;">Sign In</h3>
+      <p style=" font-size: 20px; font-weight: 600; color:#0e0e0e; text-align:center;">made with ❤️</p>
+
+
+
+
+      <input id="username" placeholder="Username" />
+      <input id="password" type="password" placeholder="Password" />
+
+      <!-- GitHub-style buttons -->
+      <button class="btn primary" onclick="login()">Login</button>
+      <button class="btn signup" onclick="showSignup()">Signup</button>
+
+      <p id="login_msg" class="muted small"></p>
+
+      
+    </div>
+  </div>
+
+  <!-- QUOTE AT BOTTOM -->
+  <div class="footer-quote">
+    "In another life, I would've really liked just doing <br> laundry and taxes with you. -Waymond"<br>
+    <i> </i>
+  </div>
+
+  <!-- Signup Modal -->
+  <div id="signupModal" class="modal">
+    <div class="modal-content">
+      <h3>Create New Account</h3>
+      
+      <input id="signup_username" placeholder="Username *" />
+      <input id="signup_password" type="password" placeholder="Password *" />
+      <input id="signup_email" type="email" placeholder="Email Address *" />
+      <input id="signup_fullname" placeholder="Full Name *" />
+      <input id="signup_phone" placeholder="Phone Number" />
+
+      <div class="modal-buttons">
+        <button class="btn" onclick="hideSignup()">Cancel</button>
+        <button class="btn signup" onclick="signup()">Create Account</button>
+      </div>
+      
+      <div id="signup_msg" class="message"></div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+
+  <script>
+    async function login() {
+      document.getElementById('login_msg').textContent = '';
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value.trim();
+
+      if (!username || !password) {
+        showLoginMessage('Enter username & password', 'error');
+        return;
+      }
+
+      const res = await apiFetch('login.php', 'POST', { username, password });
+
+      if (res.ok) {
+        showLoginMessage('...', 'success');
+        localStorage.setItem('dbg_auth', 'true');
+        localStorage.setItem('dbg_user', JSON.stringify(res.user));
+        setTimeout(() => {
+          window.location = 'dashboard.html';
+        }, 1000);
+      } else {
+        showLoginMessage(res.message || 'Login failed', 'error');
+      }
+    }
+
+    function showSignup() {
+      document.getElementById('signupModal').style.display = 'flex';
+      document.getElementById('signup_msg').textContent = '';
+      // Clear form fields
+      ['signup_username','signup_password','signup_email','signup_fullname','signup_phone'].forEach(
+        id => document.getElementById(id).value = ''
+      );
+    }
+
+    function hideSignup() {
+      document.getElementById('signupModal').style.display = 'none';
+    }
+
+    async function signup() {
+      const username = document.getElementById('signup_username').value.trim();
+      const password = document.getElementById('signup_password').value.trim();
+      const email = document.getElementById('signup_email').value.trim();
+      const full_name = document.getElementById('signup_fullname').value.trim();
+      const phone = document.getElementById('signup_phone').value.trim();
+      const message = document.getElementById('signup_msg');
+
+      if (!username || !password || !email || !full_name) {
+        showSignupMessage('Please fill all required fields', 'error');
+        return;
+      }
+
+      const res = await apiFetch('signup.php', 'POST', {
+        username,
+        password,
+        email,
+        full_name,
+        phone
+      });
+
+      if (res.ok) {
+        showSignupMessage('Account created successfully! You can now login.', 'success');
+        setTimeout(() => {
+          hideSignup();
+          // Pre-fill login form
+          document.getElementById('username').value = username;
+          document.getElementById('password').value = password;
+        }, 2000);
+      } else {
+        showSignupMessage(res.message, 'error');
+      }
+    }
+
+    function showLoginMessage(text, type) {
+      const message = document.getElementById('login_msg');
+      message.textContent = text;
+      message.className = `message ${type}`;
+    }
+
+    function showSignupMessage(text, type) {
+      const message = document.getElementById('signup_msg');
+      message.textContent = text;
+      message.className = `message ${type}`;
+    }
+
+    // Close modal when clicking outside
+    document.getElementById('signupModal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        hideSignup();
+      }
+    });
+
+    // Handle enter key in login form
+    document.getElementById('password').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        login();
+      }
+    });
+  </script>
+</body>
+</html>
